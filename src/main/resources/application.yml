@@ -1,0 +1,40 @@
+spring:
+
+  datasource:
+    url: jdbc:mysql://47.106.154.60:3306/neo_test_new?characterEncoding=utf8&useSSL=true
+    username: neo_test_new
+    password: neo_test_new123456
+
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+    #======druid数据源配置========================
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    #    配置监控统计拦截的filters，去掉后监控界面sql无法统计，“wall”用于防火墙
+    filters: stat,wall,log4j
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    #    显示sql
+    statementExecutableSqlLogEnable: true
+    #    decrypt=true启用加密，config.decrypt.key配置公钥。
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;
+
+qiniu:
+  accesskey: svgg_-f3D8HXKBfUaB1QTp9RlfOmoGHG4RfAEDFO
+  secretKey: EH_Ts9gHXpxH5jyyOdYOhPaZkKzGRpMqu82i7jgp
+  bucket: niou
+  cdnprefix: http://neo-cdn.wanwutimes.com
+
+server:
+  port: 8082
+
