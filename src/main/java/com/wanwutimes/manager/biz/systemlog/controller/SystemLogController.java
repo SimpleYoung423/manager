@@ -27,4 +27,10 @@ public class SystemLogController {
 		return "hello world "+ message;
 	}
 
+	@GetMapping("/test")
+	public String test( Long number){
+
+		return "test===> " + number;
+	}
+
 }

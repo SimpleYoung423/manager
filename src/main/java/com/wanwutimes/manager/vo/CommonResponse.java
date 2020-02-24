@@ -3,6 +3,7 @@ package com.wanwutimes.manager.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -15,6 +16,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CommonResponse<T> implements Serializable {
 
 	private Integer code;
@@ -25,4 +27,11 @@ public class CommonResponse<T> implements Serializable {
 		this.code = code;
 		this.message = message;
 	}
+
+	public  CommonResponse creat(Integer code, String message){
+		this.code = code;
+		this.message = message;
+		return new CommonResponse(code,message);
+	}
+
 }

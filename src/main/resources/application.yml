@@ -1,11 +1,16 @@
 spring:
 
+  # 404，500等错误时抛出异常，处理成json
+  resources:
+    add-mappings: false
+  mvc:
+    throw-exception-if-no-handler-found: true
   datasource:
     url: jdbc:mysql://47.106.154.60:3306/neo_test_new?characterEncoding=utf8&useSSL=true
     username: neo_test_new
     password: neo_test_new123456
 
-    driver-class-name: com.mysql.jdbc.Driver
+#    driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
 
     #======druid数据源配置========================
@@ -27,7 +32,13 @@ spring:
     #    显示sql
     statementExecutableSqlLogEnable: true
     #    decrypt=true启用加密，config.decrypt.key配置公钥。
-    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    stat-view-servlet:
+      login-username: admin
+      login-password: 123456
+      reset-enable: false
+      url-pattern: /druid/*
+
 
 qiniu:
   accesskey: svgg_-f3D8HXKBfUaB1QTp9RlfOmoGHG4RfAEDFO
@@ -35,6 +46,9 @@ qiniu:
   bucket: niou
   cdnprefix: http://neo-cdn.wanwutimes.com
 
+
+logging:
+  level:
+    com.wanwutimes.manager.biz.*.mapper: debug
 server:
   port: 8082
-

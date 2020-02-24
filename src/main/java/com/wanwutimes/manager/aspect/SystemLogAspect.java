@@ -13,11 +13,11 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -34,58 +34,60 @@ import java.util.*;
 @Slf4j
 public class SystemLogAspect {
 
-	@Autowired
+	@Resource
 	private ISystemLogService systemLogService;
-
-//	ThreadLocal<Long> startTime = new ThreadLocal<>();
 
 	@Pointcut("@annotation(com.wanwutimes.manager.annotation.SysLog)")
 	public void pointCut() {
 	}
 
 	@Around("pointCut()")
-	public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+	public Object around(ProceedingJoinPoint joinPoint) {
 
-		TimeInterval timeInterval = new TimeInterval();
-		long startTime = timeInterval.start();
-		//获取当前请求对象
-		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-		HttpServletRequest request = attributes.getRequest();
+		try {
+			TimeInterval timeInterval = new TimeInterval();
+			long startTime = timeInterval.start();
+			//获取当前请求对象
+			ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+			HttpServletRequest request = attributes.getRequest();
 
-		Object result = joinPoint.proceed();
-		Signature signature = joinPoint.getSignature();
-		MethodSignature methodSignature = (MethodSignature) signature;
-		Method method = methodSignature.getMethod();
-		String operation = method.getAnnotation(SysLog.class).value();
-		long speedTime = timeInterval.intervalMs();
-		SystemLog systemLog = new SystemLog();
+			Object result = joinPoint.proceed();
+			Signature signature = joinPoint.getSignature();
+			MethodSignature methodSignature = (MethodSignature) signature;
+			Method method = methodSignature.getMethod();
+			String operation = method.getAnnotation(SysLog.class).value();
+			long speedTime = timeInterval.intervalMs();
+			SystemLog systemLog = new SystemLog();
 
-		systemLog.setUserId(111);
+			systemLog.setUserId(111);
 
-		//记录日志时间
-		systemLog.setCreateTime(DateUtil.date(startTime));
-		//ip
-		systemLog.setIpAddress(request.getRemoteAddr());
-		//获取url
-		systemLog.setUrl(String.valueOf(request.getRequestURL()));
-		//获取uri
-		systemLog.setUri(request.getRequestURI());
-		//获取请求方法
-		systemLog.setHttpMethod(request.getMethod());
-		//参数
-		if (StrUtil.isNotEmpty(operation)) {
-			systemLog.setOperation(operation);
+			//记录日志时间
+			systemLog.setCreateTime(DateUtil.date(startTime));
+			//ip
+			systemLog.setIpAddress(request.getRemoteAddr());
+			//获取url
+			systemLog.setUrl(String.valueOf(request.getRequestURL()));
+			//获取uri
+			systemLog.setUri(request.getRequestURI());
+			//获取请求方法
+			systemLog.setHttpMethod(request.getMethod());
+			//参数
+			if (StrUtil.isNotEmpty(operation)) {
+				systemLog.setOperation(operation);
+			}
+			String parameter = Arrays.toString(joinPoint.getArgs());
+			systemLog.setParameter(parameter);
+			systemLog.setResult(result);
+			systemLog.setSpeedTime((int) speedTime);
+
+			systemLogService.saveSystemLog(systemLog);
+
+		} catch (Throwable ex) {
+			ex.printStackTrace();
 		}
-		String parameter = Arrays.toString(joinPoint.getArgs());
-		systemLog.setParameter(parameter);
-		systemLog.setResult(result);
-		systemLog.setSpeedTime((int) speedTime);
 
-		systemLogService.saveSystemLog(systemLog);
-
-		return request;
+		return "保存日志成功!";
 	}
-
 
 
 }
